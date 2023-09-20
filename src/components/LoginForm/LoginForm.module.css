@@ -1,0 +1,26 @@
+.LoginForm {
+	align-items: center;
+	background: linear-gradient(#fff, #eee);
+	display: flex;
+	height: 100%;
+	justify-content: center;
+	width: 100%;
+}
+
+form {
+	background: #fff;
+	border-radius: 4px;
+	box-shadow:
+		0 2px 4px #0001,
+		0 4px 12px #0001;
+	display: flex;
+	flex-direction: column;
+	height: 18rem;
+	justify-content: space-evenly;
+	padding: 4rem;
+}
+
+input {
+	display: block;
+	padding: 0.24rem;
+}
