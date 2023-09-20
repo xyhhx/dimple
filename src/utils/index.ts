@@ -1,7 +1,8 @@
 /* @plop import injection */
-import LoginForm from './LoginForm'
+import serializeForm from './serializeForm'
 
 export {
 	/* @plop export injection */
-	LoginForm,
+	serializeForm,
+	
 }

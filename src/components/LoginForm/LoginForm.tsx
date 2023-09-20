@@ -1,6 +1,9 @@
 import { type JSX, Component, onCleanup } from 'solid-js'
-import styles from './LoginForm.module.css'
 import { createClient, AuthType } from 'matrix-js-sdk'
+
+import { serializeForm } from '~/utils'
+
+import styles from './LoginForm.module.css'
 
 const getLoginToken = async ({ baseUrl, user, password }) => {
 	const loginClient = createClient({ baseUrl })
@@ -25,21 +28,7 @@ const handleSubmit = ref => {
 	const handler = async event => {
 		event.preventDefault()
 
-		const {
-			baseUrl,
-			username: user,
-			password,
-		} = [...ref.querySelectorAll('input')]
-			.filter(el => el.type !== 'submit')
-			.reduce(
-				(accumulator, { name, value }) => ({
-					...accumulator,
-					[name]: Object.keys(accumulator).includes(name)
-						? [...accumulator[name], value]
-						: value,
-				}),
-				{},
-			)
+		const { baseUrl, username: user, password } = serializeForm(ref)
 
 		const tokenCreds = await getLoginToken({ baseUrl, user, password })
 		console.log({ tokenCreds })
