@@ -1,36 +1,25 @@
-import { type JSX, Component, onCleanup } from 'solid-js'
-import { createClient, AuthType } from 'matrix-js-sdk'
+import { Component, onCleanup } from 'solid-js'
 
-import { serializeForm } from '~/utils'
+import {
+	getLoginTokenCredsFromPassword,
+	getMatrixUrlFromBaseDomain,
+	serializeForm,
+} from '~/utils'
 
 import styles from './LoginForm.module.css'
-
-const getLoginToken = async ({ baseUrl, user, password }) => {
-	const loginClient = createClient({ baseUrl })
-	const { access_token, device_id } = await loginClient.login(
-		AuthType.Password,
-		{
-			user,
-			password,
-		},
-	)
-	loginClient.stopClient()
-
-	return {
-		baseUrl,
-		userId: user,
-		access_token,
-		device_id,
-	}
-}
 
 const handleSubmit = ref => {
 	const handler = async event => {
 		event.preventDefault()
 
 		const { baseUrl, username: user, password } = serializeForm(ref)
+		const matrixUrl = await getMatrixUrlFromBaseDomain(baseUrl)
 
-		const tokenCreds = await getLoginToken({ baseUrl, user, password })
+		const tokenCreds = await getLoginTokenCredsFromPassword({
+			baseUrl: matrixUrl,
+			user,
+			password,
+		})
 		console.log({ tokenCreds })
 	}
 
@@ -50,18 +39,21 @@ const LoginForm: Component<{}> = props => {
 						id="baseUrl"
 						name="baseUrl"
 						placeholder="Your homeserver URL"
+						required
 					/>
 					<input
 						type="text"
 						id="username"
 						name="username"
 						placeholder="Your username"
+						required
 					/>
 					<input
 						type="password"
 						id="password"
 						name="password"
 						placeholder="Your matrix password"
+						required
 					/>
 					<input type="submit" />
 					<p>Fill out the form to continue.</p>

@@ -1,0 +1,2 @@
+import getMatrixUrlFromBaseDomain from './getMatrixUrlFromBaseDomain'
+export default getMatrixUrlFromBaseDomain
