@@ -1,26 +1,27 @@
 import { Component, onCleanup } from 'solid-js'
 
-import {
-	getLoginTokenCredsFromPassword,
-	getMatrixUrlFromBaseDomain,
-	serializeForm,
-} from '~/utils'
+import { getMatrixUrlFromBaseDomain, serializeForm } from '~/utils'
 
 import styles from './LoginForm.module.css'
+import { start } from '~/modules/matrix/matrix'
 
 const handleSubmit = ref => {
 	const handler = async event => {
 		event.preventDefault()
 
 		const { baseUrl, username: user, password } = serializeForm(ref)
-		const matrixUrl = await getMatrixUrlFromBaseDomain(baseUrl)
 
-		const tokenCreds = await getLoginTokenCredsFromPassword({
-			baseUrl: matrixUrl,
-			user,
-			password,
-		})
-		console.log({ tokenCreds })
+		const matrixUrl = await getMatrixUrlFromBaseDomain(baseUrl)
+		if (!matrixUrl) {
+			console.warn(`Invalid matrix urk: ${baseUrl}`)
+			return false
+		}
+
+		const mxid = `@${user}:${new URL(baseUrl).host}`
+
+		const client = await start({ baseUrl: matrixUrl, userId: mxid, password })
+
+		console.log('✅', { client })
 	}
 
 	ref.addEventListener('submit', handler)

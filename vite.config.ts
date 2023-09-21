@@ -1,17 +1,21 @@
 import { defineConfig } from 'vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
 import solidPlugin from 'vite-plugin-solid'
-// import devtools from 'solid-devtools/vite';
+import { viteStaticCopy } from 'vite-plugin-static-copy'
 
 export default defineConfig({
 	plugins: [
-		/*
-    Uncomment the following line to enable solid-devtools.
-    For more info see https://github.com/thetarnav/solid-devtools/tree/main/packages/extension#readme
-    */
-		// devtools(),
 		solidPlugin(),
 		tsconfigPaths(),
+
+		viteStaticCopy({
+			targets: [
+				{
+					src: 'node_modules/@matrix-org/olm/olm.wasm',
+					dest: '.',
+				},
+			],
+		}),
 	],
 	server: {
 		port: 3000,
