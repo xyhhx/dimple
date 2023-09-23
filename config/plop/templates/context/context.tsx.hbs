@@ -1,0 +1,10 @@
+import { JSX, createContext, createSignal, useContext } from "solid-js";
+
+const {{ pascalCase name }} = createContext()
+
+export const MatrixProvider = ({children}: {children?: JSX.Element}) => {
+	const [value, setValue] = createSignal()
+	return <{{ pascalCase name }}.Provider value={ { value, setValue } }>{children}</{{ pascalCase name }}.Provider>
+}
+
+export const use{{ pascalCase name }} = () => useContext({{ pascalCase name }})
