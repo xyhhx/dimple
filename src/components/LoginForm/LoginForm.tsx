@@ -1,35 +1,30 @@
 import { Component, onCleanup } from 'solid-js'
 
-import { getMatrixUrlFromBaseDomain, serializeForm } from '~/utils'
+import { serializeForm } from '~/utils'
 
 import styles from './LoginForm.module.css'
-import { start } from '~/modules/matrix/matrix'
-
-const handleSubmit = ref => {
-	const handler = async event => {
-		event.preventDefault()
-
-		const { baseUrl, username: user, password } = serializeForm(ref)
-
-		const matrixUrl = await getMatrixUrlFromBaseDomain(baseUrl)
-		if (!matrixUrl) {
-			console.warn(`Invalid matrix urk: ${baseUrl}`)
-			return false
-		}
-
-		const mxid = `@${user}:${new URL(baseUrl).host}`
-
-		const client = await start({ baseUrl: matrixUrl, userId: mxid, password })
-
-		console.log('✅', { client })
-	}
-
-	ref.addEventListener('submit', handler)
-
-	onCleanup(() => ref.removeEventListener('submit', handler))
-}
+import { useMatrix } from '~/contexts'
+import { useNavigate } from '@solidjs/router'
 
 const LoginForm: Component<{}> = props => {
+	const [, { login }] = useMatrix()
+	const navigate = useNavigate()
+
+	const handleSubmit = (ref: HTMLFormElement) => {
+		const handler = async (event: SubmitEvent) => {
+			event.preventDefault()
+
+			const loginArgs = serializeForm(ref)
+			const loginResult = await login(loginArgs)
+
+			if (!!loginResult) navigate('/')
+		}
+
+		ref.addEventListener('submit', handler)
+
+		onCleanup(() => ref.removeEventListener('submit', handler))
+	}
+
 	return (
 		<>
 			<div class={styles.LoginForm}>
