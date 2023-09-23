@@ -24,6 +24,7 @@
 	},
 	"dependencies": {
 		"@matrix-org/olm": "3.2.14",
+		"@solidjs/router": "0.8.3",
 		"@tauri-apps/api": "^1.4.0",
 		"matrix-js-sdk": "^28.1.0",
 		"node-localstorage": "^3.0.5",

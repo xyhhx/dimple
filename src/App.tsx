@@ -1,11 +1,16 @@
-import type { Component } from 'solid-js'
+import { lazy, type Component } from 'solid-js'
 
 import styles from './App.module.css'
-import { LoginForm } from '~/components'
+
+import { Route, Routes } from '@solidjs/router'
+
+const Login = lazy(() => import('~/components/LoginPage'))
 
 const App: Component<{}> = () => (
 	<div class={styles.App}>
-		<LoginForm />
+		<Routes>
+			<Route path="/login" component={Login} />
+		</Routes>
 	</div>
 )
 
