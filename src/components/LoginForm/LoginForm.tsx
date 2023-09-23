@@ -20,7 +20,7 @@ const LoginForm = () => {
 
 	createEffect(() => {
 		if (client !== null) navigate('/')
-	})
+	}, client)
 
 	return (
 		<>

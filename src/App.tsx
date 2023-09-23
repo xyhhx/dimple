@@ -13,7 +13,7 @@ const App: Component<{}> = () => {
 	createEffect(() => {
 		if (client === null) navigate('/login')
 		else navigate('/')
-	}, [client])
+	}, client)
 
 	return (
 		<MatrixProvider>
