@@ -1,4 +1,4 @@
-import { Component, onCleanup } from 'solid-js'
+import { Component, createEffect, onCleanup } from 'solid-js'
 
 import { serializeForm } from '~/utils'
 
@@ -6,50 +6,46 @@ import styles from './LoginForm.module.css'
 import { useMatrix } from '~/contexts'
 import { useNavigate } from '@solidjs/router'
 
-const LoginForm: Component<{}> = props => {
+const LoginForm = () => {
 	const [, { login }] = useMatrix()
-	const navigate = useNavigate()
+	// const navigate = useNavigate()
 
-	const handleSubmit = (ref: HTMLFormElement) => {
-		const handler = async (event: SubmitEvent) => {
-			event.preventDefault()
+	const handleSubmit = async (event: SubmitEvent) => {
+		event.preventDefault()
 
-			const loginArgs = serializeForm(ref)
-			const loginResult = await login(loginArgs)
+		const loginArgs = serializeForm(event.target as HTMLFormElement)
+		const loginResult = await login(loginArgs)
 
-			if (!!loginResult) navigate('/')
-		}
+		console.log({ loginResult })
 
-		ref.addEventListener('submit', handler)
-
-		onCleanup(() => ref.removeEventListener('submit', handler))
+		// if (!!loginResult) navigate('/')
 	}
 
 	return (
 		<>
 			<div class={styles.LoginForm}>
-				<form use:handleSubmit>
+				<form onSubmit={handleSubmit}>
 					<h4>Welcome to dimple</h4>
 					<input
 						type="url"
 						id="baseUrl"
 						name="baseUrl"
 						placeholder="Your homeserver URL"
-						required
+						// required
 					/>
 					<input
 						type="text"
 						id="username"
 						name="username"
 						placeholder="Your username"
-						required
+						// required
 					/>
 					<input
 						type="password"
 						id="password"
 						name="password"
 						placeholder="Your matrix password"
-						required
+						// required
 					/>
 					<input type="submit" />
 					<p>Fill out the form to continue.</p>

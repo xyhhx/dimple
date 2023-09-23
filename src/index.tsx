@@ -4,7 +4,6 @@ import { render } from 'solid-js/web'
 import './index.css'
 import App from './App'
 import { Router } from '@solidjs/router'
-import { MatrixProvider } from './contexts'
 
 const root = document.getElementById('root')
 
@@ -17,9 +16,7 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
 render(
 	() => (
 		<Router>
-			<MatrixProvider>
-				<App />
-			</MatrixProvider>
+			<App />
 		</Router>
 	),
 	root!,
