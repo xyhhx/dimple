@@ -1,12 +1,13 @@
-import { JSX, createContext, createSignal, useContext } from 'solid-js'
+import { JSX, createContext, useContext } from 'solid-js'
+import { createStore } from 'solid-js/store'
 
-const Matrix = createContext()
+export type MatrixContextValue = [account: null | any]
+
+const Matrix = createContext<MatrixContextValue>([null])
 
 export const MatrixProvider = ({ children }: { children?: JSX.Element }) => {
-	const [value, setValue] = createSignal()
-	return (
-		<Matrix.Provider value={{ value, setValue }}>{children}</Matrix.Provider>
-	)
+	const [account, setAccount] = createStore({})
+	return <Matrix.Provider value={[account]}>{children}</Matrix.Provider>
 }
 
 export const useMatrix = () => useContext(Matrix)
