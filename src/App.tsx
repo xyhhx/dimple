@@ -1,4 +1,4 @@
-import { type Component } from 'solid-js'
+import { createEffect, type Component } from 'solid-js'
 import { Route, Routes, useNavigate } from '@solidjs/router'
 
 import { MatrixProvider, useMatrix } from '~/contexts'
@@ -7,10 +7,13 @@ import { HomePage, LoginPage } from '~/components'
 import styles from './App.module.css'
 
 const App: Component<{}> = () => {
-	const [{ account }] = useMatrix()
+	const [{ client }] = useMatrix()
 	const navigate = useNavigate()
 
-	if (account === null) navigate('/login')
+	createEffect(() => {
+		if (client === null) navigate('/login')
+		else navigate('/')
+	}, [client])
 
 	return (
 		<MatrixProvider>

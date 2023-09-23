@@ -7,19 +7,20 @@ import { useMatrix } from '~/contexts'
 import { useNavigate } from '@solidjs/router'
 
 const LoginForm = () => {
-	const [, { login }] = useMatrix()
-	// const navigate = useNavigate()
+	const [{ client }, { login }] = useMatrix()
+	const navigate = useNavigate()
 
 	const handleSubmit = async (event: SubmitEvent) => {
 		event.preventDefault()
 
 		const loginArgs = serializeForm(event.target as HTMLFormElement)
 		const loginResult = await login(loginArgs)
-
 		console.log({ loginResult })
-
-		// if (!!loginResult) navigate('/')
 	}
+
+	createEffect(() => {
+		if (client !== null) navigate('/')
+	})
 
 	return (
 		<>
