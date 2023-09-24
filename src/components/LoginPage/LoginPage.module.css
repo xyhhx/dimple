@@ -5,4 +5,12 @@
 	height: 100%;
 	justify-content: center;
 	width: 100%;
+	padding: 0;
+}
+
+.header {
+	background: #000;
+	color: #fff;
+	border-radius: 12px;
+	padding: 4rem 8rem;
 }

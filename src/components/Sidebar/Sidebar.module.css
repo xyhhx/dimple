@@ -1,0 +1,21 @@
+.Sidebar {
+	display: flex;
+	flex-direction: column;
+	width: calc(100vw / 4);
+	height: 100%;
+	border-right: 1px solid #00000010;
+}
+
+.header {
+	border-bottom: 1px solid #00000010;
+	padding: 1rem;
+}
+
+.main {
+	flex: 1;
+}
+
+.footer {
+	border-top: 1px solid #00000010;
+	padding: 1rem;
+}

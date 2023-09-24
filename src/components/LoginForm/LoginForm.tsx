@@ -7,7 +7,7 @@ import { useMatrix } from '~/contexts'
 import { useNavigate } from '@solidjs/router'
 
 const LoginForm = () => {
-	const [{ client }, { login }] = useMatrix()
+	const [, { login }] = useMatrix()
 	const navigate = useNavigate()
 
 	const handleSubmit = async (event: SubmitEvent) => {
@@ -15,38 +15,33 @@ const LoginForm = () => {
 
 		const loginArgs = serializeForm(event.target as HTMLFormElement)
 		const loginResult = await login(loginArgs)
-		console.log({ loginResult })
+		if (loginResult) navigate('/')
 	}
-
-	createEffect(() => {
-		if (client !== null) navigate('/')
-	}, client)
 
 	return (
 		<>
 			<div class={styles.LoginForm}>
 				<form onSubmit={handleSubmit}>
-					<h4>Welcome to dimple</h4>
 					<input
 						type="url"
 						id="baseUrl"
 						name="baseUrl"
 						placeholder="Your homeserver URL"
-						// required
+						required
 					/>
 					<input
 						type="text"
 						id="username"
 						name="username"
 						placeholder="Your username"
-						// required
+						required
 					/>
 					<input
 						type="password"
 						id="password"
 						name="password"
 						placeholder="Your matrix password"
-						// required
+						required
 					/>
 					<input type="submit" />
 					<p>Fill out the form to continue.</p>

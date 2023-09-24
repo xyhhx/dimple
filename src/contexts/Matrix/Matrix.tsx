@@ -1,19 +1,28 @@
-import { MatrixClient } from 'matrix-js-sdk'
+import { useNavigate } from '@solidjs/router'
+import { MatrixClient, Room } from 'matrix-js-sdk'
 import {
+	Accessor,
 	Component,
 	JSX,
 	createContext,
 	createEffect,
+	createSignal,
 	useContext,
 } from 'solid-js'
 import { createStore } from 'solid-js/store'
-import { TokenLogin, start, startWithToken } from '~/modules/matrix/matrix'
+import {
+	TokenLogin,
+	getRoomList,
+	start,
+	startWithToken,
+} from '~/modules/matrix/matrix'
 import { getMatrixUrlFromBaseDomain } from '~/utils'
 
 const localStorageTokenKey = 'dimple_token-auth'
 
 const defaultState: ContextState = {
 	client: null,
+	rooms: [],
 }
 
 const MatrixContext = createContext<ContextValue>([
@@ -23,7 +32,7 @@ const MatrixContext = createContext<ContextValue>([
 	},
 ])
 
-const getOnlyTokenFromLocalStorage = (localStorage: Storage) => {
+export const getOnlyTokenFromLocalStorage = (localStorage: Storage) => {
 	const tokenKey = Object.keys(localStorage).find(
 		key => key.indexOf('token') === 0,
 	)
@@ -44,6 +53,9 @@ const getTokenCreds = (localStorage: Storage): TokenLogin =>
 
 export const MatrixProvider: Component<{ children: JSX.Element }> = props => {
 	const [state, setState] = createStore<ContextState>(defaultState)
+
+	const navigate = useNavigate()
+
 	const login = async ({ baseUrl, username, password }: LoginProps) => {
 		const matrixUrl = await getMatrixUrlFromBaseDomain(baseUrl)
 
@@ -54,6 +66,8 @@ export const MatrixProvider: Component<{ children: JSX.Element }> = props => {
 
 		const mxid = `@${username}:${new URL(baseUrl).host}`
 		const client = await start({ baseUrl: matrixUrl, userId: mxid, password })
+
+		// Set token auth to localstorage
 		const accessToken = getOnlyTokenFromLocalStorage(localStorage)
 		const deviceId = getOnlyDeviceIdFromLocalStorage(localStorage)
 		const tokenLogin: TokenLogin = {
@@ -63,27 +77,33 @@ export const MatrixProvider: Component<{ children: JSX.Element }> = props => {
 			userId: mxid,
 		}
 		localStorage.setItem(localStorageTokenKey, JSON.stringify(tokenLogin))
-
-		setState({
-			client,
-		})
+		bootstrap(client)
 
 		return !!client
+	}
+
+	const bootstrap = (client: MatrixClient) => {
+		const rooms = getRoomList(client)
+		// @ts-ignore
+		globalThis.matrixClient = client
+		const newState = { client, rooms }
+		console.log(newState)
+		setState(newState)
 	}
 
 	createEffect(async () => {
 		try {
 			const tokenCreds = getTokenCreds(localStorage)
-			console.log({ tokenCreds })
 
-			if (!tokenCreds) return
+			if (!tokenCreds) {
+				navigate('/login')
+				return
+			}
+
 			const client = await startWithToken(tokenCreds)
+			bootstrap(client)
 
-			console.log({ client })
-
-			setState({
-				client,
-			})
+			console.log('Client automatically started', client)
 		} catch (err) {
 			console.log("Couldn't start client", err)
 		}
@@ -105,6 +125,7 @@ interface LoginProps {
 
 export type ContextState = {
 	client: null | MatrixClient
+	rooms: Room[]
 }
 
 export type ContextValue = [
