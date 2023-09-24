@@ -1,12 +1,10 @@
 import { useNavigate } from '@solidjs/router'
 import { MatrixClient, Room } from 'matrix-js-sdk'
 import {
-	Accessor,
 	Component,
 	JSX,
 	createContext,
 	createEffect,
-	createSignal,
 	useContext,
 } from 'solid-js'
 import { createStore } from 'solid-js/store'
@@ -18,10 +16,17 @@ import {
 } from '~/modules/matrix/matrix'
 import { getMatrixUrlFromBaseDomain } from '~/utils'
 
+export enum ReadyStates {
+	Uninitialized,
+	Authenticating,
+	Ready,
+}
+
 const localStorageTokenKey = 'dimple_token-auth'
 
 const defaultState: ContextState = {
 	client: null,
+	readyState: ReadyStates.Uninitialized,
 	rooms: [],
 }
 
@@ -57,6 +62,7 @@ export const MatrixProvider: Component<{ children: JSX.Element }> = props => {
 	const navigate = useNavigate()
 
 	const login = async ({ baseUrl, username, password }: LoginProps) => {
+		setState({ readyState: ReadyStates.Authenticating })
 		const matrixUrl = await getMatrixUrlFromBaseDomain(baseUrl)
 
 		if (!matrixUrl) {
@@ -79,6 +85,8 @@ export const MatrixProvider: Component<{ children: JSX.Element }> = props => {
 		localStorage.setItem(localStorageTokenKey, JSON.stringify(tokenLogin))
 		bootstrap(client)
 
+		setState({ readyState: ReadyStates.Ready })
+
 		return !!client
 	}
 
@@ -92,6 +100,8 @@ export const MatrixProvider: Component<{ children: JSX.Element }> = props => {
 	}
 
 	createEffect(async () => {
+		if (state.client) return
+		setState({ readyState: ReadyStates.Authenticating })
 		try {
 			const tokenCreds = getTokenCreds(localStorage)
 
@@ -106,6 +116,8 @@ export const MatrixProvider: Component<{ children: JSX.Element }> = props => {
 			console.log('Client automatically started', client)
 		} catch (err) {
 			console.log("Couldn't start client", err)
+		} finally {
+			setState({ readyState: ReadyStates.Ready })
 		}
 	})
 
@@ -125,6 +137,7 @@ interface LoginProps {
 
 export type ContextState = {
 	client: null | MatrixClient
+	readyState: ReadyStates
 	rooms: Room[]
 }
 
