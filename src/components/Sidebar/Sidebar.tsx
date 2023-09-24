@@ -1,18 +1,22 @@
-import { Component, For, createEffect } from 'solid-js'
+import { Component, Index } from 'solid-js'
+
+import { useMatrix } from '~/contexts'
+import { RoomCard } from '~/components'
 
 import styles from './Sidebar.module.css'
-import { useMatrix } from '~/contexts'
 
-const Sidebar: Component<{}> = props => {
-	const [{ rooms }] = useMatrix()
+const Sidebar: Component<{}> = () => {
+	const [state] = useMatrix()
 
 	return (
 		<aside class={styles.Sidebar}>
 			<header class={styles.header}>Rooms</header>
 			<main class={styles.main}>
-				<For each={rooms}>{room => <p>{JSON.stringify(room)}</p>}</For>
+				<ul class={styles.ul}>
+					<Index each={state.rooms}>{room => <RoomCard room={room()} />}</Index>
+				</ul>
 			</main>
-			<footer class={styles.footer}>{rooms.length} rooms</footer>
+			<footer class={styles.footer}>{state.rooms.length} rooms</footer>
 		</aside>
 	)
 }

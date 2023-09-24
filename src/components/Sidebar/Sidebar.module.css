@@ -19,3 +19,9 @@
 	border-top: 1px solid #00000010;
 	padding: 1rem;
 }
+
+.li {
+	list-style: none;
+	padding: 0.5rem 1rem;
+	border: 1px solid #00000010;
+}
